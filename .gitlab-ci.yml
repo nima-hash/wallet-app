@@ -14,12 +14,9 @@ build_app:
     - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
     - apt-get install -y nodejs
   script:
-    # Install PHP dependencies
     - composer install --no-dev --optimize-autoloader
-    # Install JS dependencies & build assets
     - npm install
     - npm run build
-    # Create build artifact
     - tar czf app-build.tar.gz ./*
   artifacts:
     paths:
@@ -37,30 +34,21 @@ deploy_production:
   before_script:
     - apk add --no-cache openssh-client rsync
     - mkdir -p ~/.ssh
-    # Configure SSH key for GitLab -> Host access
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -p $SSH_PORT $SSH_HOST >> ~/.ssh/known_hosts
   script:
-    # Upload artifact to server
     - scp -P $SSH_PORT app-build.tar.gz $SSH_USER@$SSH_HOST:/tmp/app-build.tar.gz
-
-    # Extract, sync, configure, and migrate
-    - ssh -p $SSH_PORT $SSH_USER@$SSH_HOST "
+    - |
+      ssh -p $SSH_PORT $SSH_USER@$SSH_HOST "
         mkdir -p $DEPLOY_PATH &&
         tar xzf /tmp/app-build.tar.gz -C $DEPLOY_PATH &&
         rm /tmp/app-build.tar.gz &&
-
-        # Write .env file
         echo \"$ENV_FILE\" > $DEPLOY_PATH/.env &&
-
-        # Write PEM keys securely
         mkdir -p $DEPLOY_PATH/storage/keys &&
         echo \"$APP_KEY_PUBLIC\" > $DEPLOY_PATH/storage/keys/public.pem &&
         echo \"$APP_KEY_PRIVATE\" > $DEPLOY_PATH/storage/keys/private.pem &&
         chmod 600 $DEPLOY_PATH/storage/keys/*.pem &&
-
-        # Run DB migrations (example using Phinx)
         cd $DEPLOY_PATH &&
         if [ -f vendor/bin/phinx ]; then
           php vendor/bin/phinx migrate -e production
