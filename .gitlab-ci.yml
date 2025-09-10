@@ -11,12 +11,8 @@ build_app:
   before_script:
     - apt-get update && apt-get install -y unzip git
     - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-    - apt-get install -y nodejs
   script:
     - composer install --no-dev --optimize-autoloader
-    - npm install
-    - npm run build
     - tar czf app-build.tar.gz ./*
   artifacts:
     paths:
