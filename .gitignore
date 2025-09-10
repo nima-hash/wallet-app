@@ -1,0 +1,82 @@
+#
+# Gitignore
+#
+# A well-maintained .gitignore file for a PHP project.
+
+# ====================
+# PHP & Composer
+# ====================
+# Ignore the entire vendor directory where Composer installs dependencies.
+/vendor/
+# composer.lock ensures everyone uses the exact same dependency versions.
+# DO NOT IGNORE this file in a team project.
+
+# ====================
+# Security & Secrets
+# ====================
+# Environment files that contain sensitive information.
+.env
+.env.*
+.env.*.local
+.env.local
+
+# Private key files
+/keys/
+*.pem
+
+# ====================
+# Logs & Cache
+# ====================
+# Directories for logs, temporary files, and cache.
+/logs/
+/tmp/
+/cache/
+# Log files
+*.log
+*.err
+*.sql.log
+*.tmp
+*.temp
+
+# ====================
+# IDE & Editor Files
+# ====================
+# VS Code
+.vscode/
+
+# PhpStorm / IntelliJ
+.idea/
+.project
+.settings/
+.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ====================
+# User-Uploaded Content
+# ====================
+# User-uploaded files like profile pictures should not be version controlled.
+/media/profile_Img/
+/media/temp/
+
+# ====================
+# Operating System
+# ====================
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ====================
+# Compiled Files
+# ====================
+# If you compile frontend assets (e.g., with Webpack)
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log

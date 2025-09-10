@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Auth Demo - Multi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <h1 class="mb-4">PHP Auth Demo (MySQL) - Vanilla JS + Bootstrap</h1>
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Register</h4>
+      <form  method="post" id="reg_form">
+        <label for="reg_email">username</label>
+        <input id="reg_email" class="form-control mb-2" placeholder="Email" name="reg_email">
+
+        <label for="reg_pass">Password</label>
+        <input id="reg_pass" class="form-control mb-2" placeholder="Password" type="password" name="reg_pass">
+        <button id="btn_register" type="submit" class="btn btn-primary mb-3">Register</button>
+      </form>
+
+      <h4>Login</h4>
+      <input id="log_email" class="form-control mb-2" placeholder="Email">
+      <input id="log_pass" class="form-control mb-2" placeholder="Password" type="password">
+      <button id="btn_login" class="btn btn-success mb-3">Login</button>
+
+      <h4>Actions</h4>
+      <button id="btn_me" class="btn btn-outline-primary mb-2">Get /me</button>
+      <button id="btn_refresh" class="btn btn-outline-secondary mb-2">Refresh</button>
+      <button id="btn_logout" class="btn btn-outline-danger mb-2">Logout</button>
+    </div>
+    <div class="col-md-6">
+      <h5>Output</h5>
+      <pre id="output" class="p-3 bg-white border" style="height:400px;overflow:auto;">Ready</pre>
+    </div>
+  </div>
+</div>
+<script>
+const API = window.location.origin;
+let accessToken = null;
+function out(v){ document.getElementById('output').textContent = (typeof v === 'string')? v : JSON.stringify(v, null, 2); }
+
+async function req(path, opts={}){
+  opts.headers = opts.headers || {'Content-Type':'application/json'};
+  if (opts.auth && accessToken) opts.headers['Authorization'] = 'Bearer ' + accessToken;
+  const res = await fetch(API + path, opts);
+  let body = null;
+  try { body = await res.json(); } catch(e){}
+  return {status:res.status, ok:res.ok, body};
+}
+
+
+const regForm = document.getElementById('reg_form');
+regForm.addEventListener('submit', async function(event){
+  event.preventDefault(regForm);
+  const formData = new FormData(regForm);
+  const r = await req('/api/register',{method:'POST', body: JSON.stringify({email,password})});
+  out(r);
+  if (r.ok) { accessToken = r.body.access_token; localStorage.setItem('refresh_token', r.body.refresh_token); }
+});
+
+document.getElementById('btn_login').onclick = async ()=>{
+  const email = document.getElementById('log_email').value, password = document.getElementById('log_pass').value;
+  const r = await req('/api/login',{method:'POST', body: JSON.stringify({email,password})});
+  out(r);
+  if (r.ok) { accessToken = r.body.access_token; localStorage.setItem('refresh_token', r.body.refresh_token); }
+};
+
+document.getElementById('btn_me').onclick = async ()=>{
+  const r = await req('/api/me',{method:'GET', auth:true});
+  out(r);
+  if (r.status === 401) out('Access token invalid/expired. Use Refresh.');
+};
+
+document.getElementById('btn_refresh').onclick = async ()=>{
+  const refresh = localStorage.getItem('refresh_token');
+  const r = await req('/api/refresh',{method:'POST', body: JSON.stringify({refresh_token: refresh})});
+  out(r);
+  if (r.ok){ accessToken = r.body.access_token; localStorage.setItem('refresh_token', r.body.refresh_token); }
+};
+
+document.getElementById('btn_logout').onclick = async ()=>{
+  const refresh = localStorage.getItem('refresh_token');
+  const r = await req('/api/logout',{method:'POST', body: JSON.stringify({refresh_token: refresh})});
+  out(r);
+  if (r.status === 204){ accessToken = null; localStorage.removeItem('refresh_token'); }
+};
+</script>
+</body>
+</html>

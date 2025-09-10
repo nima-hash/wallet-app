@@ -1,0 +1,89 @@
+/* Navbar Styling */
+.shop-navbar {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1030; /* Ensure navbar is on top */
+}
+
+.shop-navbar .navbar-brand {
+    color: var(--color-accent) !important; /* Make brand pop */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.shop-navbar .nav-link {
+    color: var(--color-text-light) !important;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    border-radius: 0.5rem; /* Slightly rounded for modern look */
+}
+
+.shop-navbar .nav-link:hover,
+.shop-navbar .nav-link.active {
+    color: var(--color-accent) !important;
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle highlight on hover */
+}
+
+.shop-navbar .dropdown-menu {
+    background-color: var(--color-secondary); /* Darker dropdown background */
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.shop-navbar .dropdown-item {
+    color: var(--color-text-light) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.shop-navbar .dropdown-item:hover,
+.shop-navbar .dropdown-item:focus {
+    background-color: var(--color-secondary-light); /* Lighter hover for dropdown items */
+    color: var(--color-text-dark) !important;
+}
+
+.shop-navbar .dropdown-divider {
+    border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Search Form within Navbar */
+.shop-navbar .nav-search-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--color-text-light);
+    border-radius: 0.5rem 0 0 0.5rem;
+}
+.shop-navbar .nav-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+.shop-navbar .nav-search-input:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 0.25rem rgba(255, 209, 102, 0.25); /* Accent glow, assuming RGB variable or calculate */
+    color: var(--color-text-light);
+}
+
+.shop-navbar .nav-search-button {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-text-dark) !important;
+    border-radius: 0 0.5rem 0.5rem 0;
+    transition: all 0.3s ease;
+}
+.shop-navbar .nav-search-button:hover {
+    background-color: var(--color-accent-dark); /* Using variable */
+    border-color: var(--color-accent-dark); /* Using variable */
+    color: var(--color-text-dark) !important;
+}
+
+/* Register Button in Navbar */
+.btn-accent {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-text-dark) !important;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+.btn-accent:hover {
+    background-color: var(--color-accent-dark); /* Using variable */
+    border-color: var(--color-accent-dark); /* Using variable */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}

@@ -1,0 +1,53 @@
+.requirement {
+    color: gray; /* initial */
+    list-style: none;
+    position: relative;
+    padding-left: 20px;
+}
+.requirement::before {
+    content: "○"; /* neutral */
+    position: absolute;
+    left: 0;
+}
+.requirement.invalid {
+    color: red;
+}
+.requirement.invalid::before {
+    content: "❌";
+    color: red;
+}
+.requirement.valid {
+    color: green;
+}
+.requirement.valid::before {
+    content: "✔️";
+    color: green;
+}
+.form-error{
+    color: red;
+}
+
+/* alert messages */
+.alert {
+    border-radius: 0.3rem;
+}
+.alert-info {
+    background-color: #0dcaf020;
+    border-color: #0dcaf0;
+    color: #0dcaf0;
+}
+.alert-success {
+    background-color: #19875420;
+    border-color: #198754;
+    color: #198754;
+}
+.alert-danger {
+    background-color: #dc354520;
+    border-color: #dc3545;
+    color: #dc3545;
+}
+.alert-warning {
+    background-color: #ffc10720;
+    border-color: #ffc107;
+    color: #ffc107;
+}
