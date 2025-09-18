@@ -72,12 +72,12 @@ let accessTokens = null;
 // }
 
 // A simple function to show messages, for demonstration
-function showMessage(element, message, type) {
-    const p = document.createElement('p');
-    p.innerText = message;
-    p.className = 'alert alert-' + type; // Using Bootstrap classes for example
-    element.appendChild(p);
-}
+// function showMessage(element, message, type) {
+//     const p = document.createElement('p');
+//     p.innerText = message;
+//     p.className = 'alert alert-' + type; // Using Bootstrap classes for example
+//     element.appendChild(p);
+// }
 
 // Updated req function with centralized error handling
 async function req(path, opts = {}, retry = 0) {
@@ -120,7 +120,8 @@ async function req(path, opts = {}, retry = 0) {
 
         // If the response is not ok and an error was not handled above, throw it
         if (!res.ok) {
-            throw new Error(body.error ?? 'Something went wrong');
+            // throw new Error(body.error ?? 'Something went wrong');
+            return { status: res.status, ok: res.ok, error: body?.error || body };
         }
 
         return { status: res.status, ok: res.ok, body: body?.message || body };
@@ -210,8 +211,14 @@ const validateEmail = () => {
 
 // Function to display messages on the page
 function showMessage(element, message, type) {
-    element.textContent = message;
-    element.className = `alert mt-3 alert-${type}`;
+    element.innerHTML = `
+        <strong>${message}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button>
+    `;
+    element.className = `alert mt-3 alert-${type} alert-dismissible fade show`;
+    element.setAttribute('role', 'alert');
+    new bootstrap.Alert(element);
 }
 
 // Function to handle registration form submission
@@ -269,10 +276,10 @@ function handleLogin() {
     if (r.ok) {
       window.localStorage.setItem('access_token', r.body.access_token);
       window.location.href = 'dashboard.php';
-    } else if (r.body.error.includes('email not yet verified')){
+    } else if (r.error.includes('email not yet verified')){
       window.location.href = 'resend-confirmation.html';
     }else {
-      showMessage(generalMessage, `Login failed: ${r.body.error}`, 'danger');
+      showMessage(generalMessage, `Login failed: ${r.error}`, 'danger');
     }
   });
 }
