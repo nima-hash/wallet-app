@@ -1,0 +1,66 @@
+stages:
+  - build
+  - deploy
+
+# ----------------------
+# 1. Build Stage
+# ----------------------
+build_app:
+  stage: build
+  image: php:8.2-cli
+  before_script:
+    - apt-get update && apt-get install -y unzip git
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  script:
+    - composer install --no-dev --optimize-autoloader
+    - tar czf app-build.tar.gz ./*
+  artifacts:
+    paths:
+      - app-build.tar.gz
+    expire_in: 1 hour
+  only:
+    - main
+
+# ----------------------
+# 2. Deploy Stage
+# ----------------------
+deploy_production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -p $SSH_PORT $SSH_HOST >> ~/.ssh/known_hosts
+  script:
+    - scp -P $SSH_PORT app-build.tar.gz $SSH_USER@$SSH_HOST:/tmp/app-build.tar.gz
+    - |
+      ssh -p $SSH_PORT $SSH_USER@$SSH_HOST "
+        mkdir -p $DEPLOY_PATH &&
+        tar xzf /tmp/app-build.tar.gz -C $DEPLOY_PATH &&
+        rm /tmp/app-build.tar.gz &&
+        cd $DEPLOY_PATH &&
+        cat << EOF > .env
+          DB_HOST=$DB_HOST
+          DB_NAME=$DB_NAME
+          DB_USER=$DB_USER
+          DB_PASS=$DB_PASS
+        EOF
+        mkdir -p $DEPLOY_PATH/storage/keys &&
+        echo \"$APP_KEY_PUBLIC\" > $DEPLOY_PATH/storage/keys/public.pem &&
+        echo \"$APP_KEY_PRIVATE\" > $DEPLOY_PATH/storage/keys/private.pem &&
+        chmod 600 $DEPLOY_PATH/storage/keys/*.pem &&
+        # This is the updated command to correctly run Doctrine migrations
+        if [ -f vendor/bin/doctrine-migrations ]; then
+          php vendor/bin/doctrine-migrations migrate --no-interaction --configuration=doctrine-cli-config.php
+        fi &&
+        # Clear the application cache to ensure new code is loaded
+        if [ -f artisan ]; then
+          php artisan cache:clear
+        fi
+      "
+  dependencies:
+    - build_app
+  only:
+    - main
