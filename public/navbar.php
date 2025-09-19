@@ -23,7 +23,7 @@
 
 // document.addEventListener('DOMContentLoaded', async function () {
 const loadNavbar = async() => {
-   console.log('insd') 
+   console.log('loading navbar') 
   // Example: check localStorage for access token
   const token = window.localStorage.getItem("access_token");
   const navbarLinks = document.getElementById("navbar-links");
@@ -34,7 +34,7 @@ const loadNavbar = async() => {
     <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
   `;
-  console.log(token)
+  console.log(token ?? 'no acces token found');
   if (token) {
     // Example: fetch profile info with token
     const userData = await getUser();
@@ -74,7 +74,7 @@ const loadNavbar = async() => {
     }
     
   } else {
-    console.log('not')
+    console.log('you are not logged in')
     // Not logged in
     const authLinks = `
       <li class="nav-item dropdown">
